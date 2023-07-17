@@ -1,0 +1,7 @@
+*.raw
+*.bin
+*.cue
+*.o
+*.elf
+*.map
+.vscode
