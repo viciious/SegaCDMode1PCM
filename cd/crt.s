@@ -111,7 +111,12 @@ GetDiscInfo:
         bra     WaitAck
 
 GetTrackInfo:
-        move.w  d0,0x8020.w
+        move.w  0x8010.w,d1             /* track number */
+        move.w  #0x0083,d0              /* CDBTOCREAD */
+        jsr     0x5F22.w                /* call CDBIOS function */
+        move.l  d0,0x8020.w             /* MMSSFFTN */
+        move.b  d1,0x8024.w             /* track type */
+
         move.b  #'D,0x800F.w            /* sub comm port = DONE */
         bra     WaitAck
 
