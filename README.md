@@ -17,6 +17,7 @@ A couple of important notes:
 * For ADPCM, only mono samples supported
 * Stereo samples require 2 hardware channels
 * IMA ADPCM decoding is taxing on the Sub-CPU, so realistically up to 7 IMA ADPCM streams can be played back simultaneously without degradation
+* The driver also includes CDDA music support
 
 ## Notes on SB4 ADPCM
 SB4 ADPCM codec based on the Creative Labs's old 8-bit ADPCM spec: https://wiki.multimedia.cx/index.php/Creative_8_bits_ADPCM
