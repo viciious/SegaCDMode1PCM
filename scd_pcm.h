@@ -11,6 +11,11 @@ void scd_init_pcm(void);
 // the passed data can be a WAV file, for which unsigned 8-bit PCM, IMA ADPCM (codec id: 0x11) 
 // or SB4 ADPCM (codec id: 0x0200) formats are supported, otherwise raw unsigned 8-bit PCM 
 // data is assumed
+//
+// replacing data in a previously initialized buffer of sufficient size is supported
+// otherwise a new memory block will be allocated from the available memory pool
+// once the driver runs out of memory, no further allocations will be possible and
+// the driver will have to be re-initialized by calling scd_init_pcm 
 void scd_upload_buf(uint16_t buf_id, const uint8_t *data, uint32_t data_len);
 
 // scd_upload_buf starts playback on source from the start of the buffer

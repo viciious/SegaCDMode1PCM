@@ -30,6 +30,7 @@ void S_InitBuffers(uint8_t *start_addr, uint32_t size)
         buf->data = NULL;
         buf->freq = 0;
         buf->num_channels = 0;
+        buf->size = 0;
         buf->format = S_FORMAT_NONE;
     }
 }
@@ -139,7 +140,7 @@ error:
 
 void S_Buf_CopyData(sfx_buffer_t *buf, const uint8_t *data, uint32_t data_len)
 {
-    if (buf->data && buf->data_len >= data_len) {
+    if (buf->data && buf->size >= data_len) {
         // in-place update
         memcpy(buf->data, data, data_len);
         S_Buf_SetData(buf, buf->data, data_len);
@@ -151,6 +152,7 @@ void S_Buf_CopyData(sfx_buffer_t *buf, const uint8_t *data, uint32_t data_len)
     }
 
     memcpy(s_mem_rover, data, data_len);
+    buf->size = data_len;
     S_Buf_SetData(buf, s_mem_rover, data_len);
     s_mem_rover += data_len;
 }

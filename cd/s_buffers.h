@@ -16,7 +16,7 @@ enum
 typedef struct
 {
     uint8_t *data;
-    uint32_t data_len;
+    uint32_t data_len, size;
     uint16_t freq;
     uint8_t num_channels;
     uint8_t format;
