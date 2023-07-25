@@ -12,6 +12,7 @@ The demo project that comes with the driver showcases an example of how the driv
 
 A couple of important notes:
 * Each sample must be under 128KiB
+* The total amount of memory reserved for sound samples is around 460KiB
 * All PCM samples are amplified in software by a factor of 4 to compensate for the relatively quiet output of the Ricoh PCM chip
 * For ADPCM, only mono samples supported
 * Stereo samples require 2 hardware channels
