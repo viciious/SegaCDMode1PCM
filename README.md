@@ -8,6 +8,8 @@ The supported formats for sound samples are: WAV IMA ADPCM, WAV SB4 ADPCM and ra
 
 The demo project that comes with the driver showcases an example of how the driver can be used to start and control playback of multiple PCM streams. The code is based on the SEGA CD Mode 1 CD Player by Chilly Willy.
 
+![image](https://github.com/viciious/SegaCDMode1PCM/assets/1173058/40cade84-177b-4683-b512-7efce4e237f3)
+
 A couple of important notes:
 * Each sample must be under 128KiB
 * For ADPCM, only mono samples supported
