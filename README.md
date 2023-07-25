@@ -18,6 +18,7 @@ A couple of important notes:
 
 ## Notes on SB4 ADPCM
 SB4 ADPCM codec based on the Creative Labs's old 8-bit ADPCM spec: https://wiki.multimedia.cx/index.php/Creative_8_bits_ADPCM
+
 WAVE codec id of 0x0200 is used for identification and is typically unsupported by modern software players. These files can "sorta" be played back like so: `ffplay -acodec adpcm_sbpro_4 sb4.wav`
 
 The decoding process of SB4 stream is much lighter than that of IMA, so the driver has no problem decoding up 8 SB4 streams at once. However, the quality can be objectively worse, so your mileage may vary.
