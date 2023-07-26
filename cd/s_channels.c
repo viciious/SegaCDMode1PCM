@@ -67,6 +67,26 @@ void S_Chan_Init(sfx_channel_t *chan)
     pcm_loop_markers(CHBUF_POS(S_Chan_LoopBlock(chan)));
 }
 
+uint8_t S_Chan_MidiPan(uint8_t pan)
+{
+    uint8_t left, right;
+
+    if (pan == 0) {
+        // full left
+        left = 0b00001111;
+        right = 0;
+    } else if (pan == 255) {
+        // no panning
+        left = 0b00001111;
+        right = 0b11110000;
+    } else {
+        right = pan & 0xf0;
+        left = (256 - pan) >> 4;
+    }
+
+    return right | left;
+}
+
 void S_Chan_Update(sfx_channel_t *chan)
 {
     uint8_t startblock = S_Chan_StartBlock(chan);

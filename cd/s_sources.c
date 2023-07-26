@@ -197,7 +197,7 @@ void S_Src_Play(sfx_source_t *src, sfx_buffer_t *buf, uint16_t freq, uint8_t pan
 
     src->buf = buf;
     src->backbuf = -1; // force data refresh on the next update
-    src->pan[0] = pcm_midi_pan(pan); // 0 is full right, 128 is center, and 255 is full left
+    src->pan[0] = S_Chan_MidiPan(pan);
     src->env = vol;
     src->autoloop = autoloop;
     src->channels[ 0 ] = 0;
@@ -255,7 +255,7 @@ void S_Src_Update(sfx_source_t *src, uint16_t freq, uint8_t pan, uint8_t vol, ui
         src->freq = src->buf->freq;
     }
     if (src->num_channels == 1) {
-        src->pan[0] = pcm_midi_pan(pan);
+        src->pan[0] = S_Chan_MidiPan(pan);
     }
     src->env = vol;
     src->autoloop = autoloop;

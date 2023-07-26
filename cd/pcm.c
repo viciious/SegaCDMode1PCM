@@ -226,21 +226,3 @@ void pcm_set_pan(uint8_t pan)
     PCM_PAN = pcm_lcf(pan);
     pcm_delay();
 }
-
-uint8_t pcm_midi_pan(uint8_t pan)
-{
-    uint8_t left, right;
-
-    if (pan == 0) {
-        left = 0b00001111;
-        right = 0;
-    } else if (pan == 255) {
-        left = 0;
-        right = 0b11110000;
-    } else {
-        right = pan & 0xf0;
-        left = (256 - pan) >> 4;
-    }
-
-    return right | left;
-}

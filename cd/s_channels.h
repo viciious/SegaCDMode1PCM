@@ -35,6 +35,7 @@ void S_Chan_Update(sfx_channel_t *chan);
 uint16_t S_Chan_GetPosition(sfx_channel_t *src);
 int8_t S_Chan_BackBuffer(sfx_channel_t *chan);
 int8_t S_Chan_StartBlock(sfx_channel_t *chan);
+uint8_t S_Chan_MidiPan(uint8_t pan);
 
 int S_AllocChannel(void);
 

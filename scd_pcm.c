@@ -77,7 +77,7 @@ void scd_update_src(uint8_t src_id, uint16_t freq, uint8_t pan, uint8_t vol, uin
     write_long(0xA12010, ((unsigned)src_id<<16)); /* src|0 */
     write_long(0xA12014, ((unsigned)freq<<16)|pan); /* freq|pan */
     write_long(0xA12018, ((unsigned)vol<<16)|autoloop); /* vol|autoloop */
-    wait_do_cmd('U'); // SfxPlaySource command
+    wait_do_cmd('U'); // SfxUpdateSource command
     wait_cmd_ack();
     write_byte(0xA1200E, 0x00); // acknowledge receipt of command result
 }
@@ -86,7 +86,7 @@ uint16_t scd_getpos_for_src(uint8_t src_id)
 {
     uint16_t pos;
     write_long(0xA12010, src_id<<16);
-    wait_do_cmd('G'); // SfxPUnPSource command
+    wait_do_cmd('G'); // SfxGetSourcePosition command
     wait_cmd_ack();
     pos = read_word(0xA12020);
     write_byte(0xA1200E, 0x00); // acknowledge receipt of command result

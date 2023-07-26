@@ -40,7 +40,6 @@ extern void pcm_set_start(uint8_t start, uint16_t offset);
 extern void pcm_set_loop(uint16_t loopstart);
 extern void pcm_set_env(uint8_t vol);
 extern void pcm_set_pan(uint8_t pan);
-extern uint8_t pcm_midi_pan(uint8_t pan);
 extern void pcm_loop_markers(uint16_t start);
 extern uint8_t pcm_u8_to_sm_lut[256];
 /* from pcm-io.s */

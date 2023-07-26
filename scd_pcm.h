@@ -24,8 +24,8 @@ void scd_upload_buf(uint16_t buf_id, const uint8_t *data, uint32_t data_len);
 //
 // value range for src_id: [1, 8] and a special value of 255, which allocates a new free source id
 // value range for buf_id: [1, 256]
-// values for freq: [0, 32767], a value of 0 means "use frequency derived from the WAVE file"
-// values for pan: [0, 255], 0 is full right, 128 is center, and 255 is full left
+// values for freq: [0, 32767] value of 0 means "use frequency derived from the WAVE file"
+// values for pan: [0, 255] value of 255 disables panning, 0 is full left, 128 is center, and 254 is full right
 // values for vol: [0, 255]
 // values for autoloop: [0, 255], a boolean: the source will automatically loopf from the start after
 // reaching the end of the playback buffer
@@ -43,8 +43,8 @@ uint8_t scd_punpause_src(uint8_t src_id, uint8_t paused);
 // scd_update_src updates the frequency, panning, volume and autoloop property for the source
 //
 // value range for src_id: [1, 8] and a special value of 255, which allocates a new free source id
-// values for freq: [0, 32767], a value of 0 means "use frequency derived from the WAVE file"
-// values for pan: [0, 255], 0 is full right, 128 is center, and 255 is full left
+// values for freq: [0, 32767] value of 0 means "use frequency derived from the WAVE file"
+// values for pan: [0, 255] value of 255 disables panning, 0 is full left, 128 is center, and 254 is full right
 // values for vol: [0, 255]
 // values for autoloop: [0, 255], a boolean: the source will automatically loopf from the start after
 // reaching the end of the playback buffer
