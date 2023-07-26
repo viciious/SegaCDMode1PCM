@@ -20,7 +20,7 @@
 extern "C" {
 #endif
 
-#define PCM_U8_AMPLIFICATION 4
+#define PCM_U8_AMPLIFICATION 1
 
 // convert from 8-bit signed samples to sign/magnitude samples
 #define pcm_s8_to_sm(s) (((s) < 0) ? ((s) < -127 ? 127 : -(s)) : (((s) > 126 ? 126 : (s))|128))
