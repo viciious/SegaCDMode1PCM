@@ -22,6 +22,7 @@ void S_RewindSource(uint8_t src_id);
 void S_StopSource(uint8_t src_id);
 void S_PUnPSource(uint8_t src_id, uint8_t pause);
 uint16_t S_GetSourcePosition(uint8_t src_id);
+uint8_t S_SourceIsPlaying(uint8_t src_id);
 
 #ifdef __cplusplus
 }

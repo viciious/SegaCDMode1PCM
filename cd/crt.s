@@ -92,6 +92,8 @@ WaitCmd:
         beq     SfxStopSource
         cmpi.b  #'G,0x800E.w
         beq     SfxGetSourcePosition
+        cmpi.b  #'Y,0x800E.w
+        beq     SfxSourceIsPlaying
 
         move.b  #'E,0x800F.w            /* sub comm port = ERROR */
 WaitAck:
@@ -321,6 +323,21 @@ SfxGetSourcePosition:
         lea     4(sp),sp                /* clear the stack */
 
         move.w  d0,0x8020.w             /* position */
+
+        move.b  #'D,0x800F.w            /* sub comm port = DONE */
+        bra     WaitAck
+
+SfxSourceIsPlaying:
+| uint8_t S_SourceIsPlaying(uint8_t src_id);
+        moveq   #0,d0
+
+        move.w  0x8010.w,d0
+        move.l  d0,-(sp)                /* src_id */
+
+        jsr     S_SourceIsPlaying
+        lea     4(sp),sp                /* clear the stack */
+
+        move.b  d0,0x8020.w             /* state */
 
         move.b  #'D,0x800F.w            /* sub comm port = DONE */
         bra     WaitAck

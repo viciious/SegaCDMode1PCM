@@ -23,6 +23,9 @@ typedef struct
     int8_t backbuf;
     uint8_t autoloop;
     uint8_t paused;
+    uint8_t eof;
+    uint16_t rem;
+    uint16_t bufpos[2];
     uint32_t painted;
 } sfx_source_t;
 
@@ -39,7 +42,9 @@ int S_AllocSource(void);
 void S_Src_Init(sfx_source_t *src);
 void S_Src_Play(sfx_source_t *src, sfx_buffer_t *buf, uint16_t freq, uint8_t pan, uint8_t vol, uint8_t autoloop);
 void S_Src_Stop(sfx_source_t *src);
-void S_Src_Paint(sfx_source_t *src);
+// returns 1 if fully painted
+// returns 0 otherwise and the function needs to be called again
+int S_Src_Paint(sfx_source_t *src);
 void S_Src_Update(sfx_source_t *src, uint16_t freq, uint8_t pan, uint8_t vol, uint8_t autoloop);
 void S_Src_Rewind(sfx_source_t *src);
 void S_Src_SetPause(sfx_source_t *src, uint8_t paused);

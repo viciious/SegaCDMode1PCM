@@ -33,8 +33,9 @@ void S_Update(void)
     if (s_upd >= S_MAX_SOURCES) {
         s_upd = 0;
     }
-    S_Src_Paint(&s_sources[ s_upd ]);
-    s_upd++;
+    if (S_Src_Paint(&s_sources[ s_upd ])) {
+        s_upd++;
+    }
 }
 
 void S_SetBufferData(uint16_t buf_id, uint8_t *data, uint32_t data_len)
@@ -136,4 +137,15 @@ uint16_t S_GetSourcePosition(uint8_t src_id)
     }
 
     return S_Src_GetPosition(src);
+}
+
+uint8_t S_SourceIsPlaying(uint8_t src_id)
+{
+    sfx_source_t *src = &s_sources[ src_id - 1 ];
+
+    if (src_id == 0 || src_id > S_MAX_SOURCES) {
+        return 0;
+    }
+
+    return src->buf != 0/* && src->painted > 0*/;
 }

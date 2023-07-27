@@ -3,13 +3,17 @@
 #include "s_buffers.h"
 #include "pcm.h"
 
+#define S_PAINT_CHUNK   128 // the number of samples to paint in a single call of S_Src_Paint
+
 sfx_source_t s_sources[ S_MAX_SOURCES ] = { { 0 } };
 
 void S_Src_Init(sfx_source_t *src)
 {
-    src->buf = 0;
+    src->buf = NULL;
     src->num_channels = 0;
     src->channels[0] = src->channels[1] = 0;
+    src->rem = 0;
+    src->eof = 0;
 }
 
 void S_Src_Stop(sfx_source_t *src)
@@ -22,6 +26,8 @@ void S_Src_Stop(sfx_source_t *src)
     src->freq = 0;
     src->painted = 0;
     src->num_channels = 0;
+    src->rem = 0;
+    src->eof = 1;
 }
 
 void S_Src_Rewind(sfx_source_t *src)
@@ -119,75 +125,101 @@ uint16_t S_Src_LoadSamples(sfx_source_t *src, uint16_t *pos, uint16_t len)
     return painted;
 }
 
-void S_Src_Paint(sfx_source_t *src)
+int S_Src_Paint(sfx_source_t *src)
 {
     int i;
     uint16_t painted, rem;
-    uint16_t bufpos[2];
     sfx_channel_t *chan;
     sfx_channel_t *prichan;
 
     // stream data
     if (!src->buf || !src->num_channels) {
         S_Src_Stop(src);
-        return;
+        return 1;
     }
 
     // use position of the primary channel to determine backbuffer id
     prichan = &s_channels[ src->channels[ 0 ] ];
 
     int8_t backbuf = S_Chan_BackBuffer( prichan );
-    if (src->backbuf == backbuf) {
-        return;
+    if (src->backbuf != backbuf) {
+        if (src->eof) {
+            S_Src_Stop(src);
+            return 1;
+        }
+        
+        src->backbuf = backbuf;
+        src->rem = CHBUF_SIZE;
+
+        for (i = 0; i < src->num_channels; i++ ) {
+            uint16_t startblock;
+
+            chan = &s_channels[ src->channels[ i ] ];
+            startblock = S_Chan_StartBlock( chan );
+            src->bufpos[i] = CHBUF_POS(startblock + backbuf);
+        }
+    }
+    else {
+        if (src->rem == 0) {
+            return 1;
+        }
     }
 
-    src->backbuf = backbuf;
-
-    for (i = 0; i < src->num_channels; i++ ) {
-        uint16_t startblock;
-
-        chan = &s_channels[ src->channels[ i ] ];
-        startblock = S_Chan_StartBlock( chan );
-        bufpos[i] = CHBUF_POS(startblock + src->backbuf);
-    }
-
-    rem = CHBUF_SIZE;
+    rem = src->rem;
     painted = 0;
+    if (rem > S_PAINT_CHUNK) {
+        rem = S_PAINT_CHUNK;
+    }
+
 paint:
     if (!src->paused) {
-        painted += S_Src_LoadSamples(src, bufpos, rem - painted);
+        if (!src->eof) {
+            int len = rem - painted;
+            int newpainted = S_Src_LoadSamples(src, src->bufpos, len);
+            if (newpainted != len) {
+                src->eof = 1;
+            }
+            painted += newpainted;
+        }
 
-        if (painted < CHBUF_SIZE) {
+        if (src->eof) {
             if (src->painted > 0 && src->autoloop) {
                 // auto-restart only if we have previously painted at least 1 sample
+                src->eof = 0;
                 src->painted = 0;
                 S_Src_Rewind(src);
                 goto paint;
-            }
-            if (painted == 0) {
-                S_Src_Stop(src);
-                return;
             }
         }
     }
 
     src->painted += painted;
-    if (painted < CHBUF_SIZE) {
+    src->rem -= painted;
+
+    if (painted < S_PAINT_CHUNK) {
         for (i = 0; i < src->num_channels; i++) {
             // pad remaining buffer data with silence
-            pcm_load_zero(bufpos[ i ], CHBUF_SIZE - painted);
+            int pad = src->rem;
+            pcm_load_zero(src->bufpos[ i ], pad);
+            src->bufpos[ i ] += src->rem;
         }
+        src->rem = 0;
     }
 
-    // copy channel parameters from source and update
-    for (i = 0; i < src->num_channels; i++) {
-        chan = &s_channels[ src->channels[ i ] ];
-        chan->freq = src->freq;
-        chan->env = src->env;
-        chan->pan = src->pan[i];
+    if (src->rem == 0) {
+        // copy channel parameters from source and update
+        for (i = 0; i < src->num_channels; i++) {
+            chan = &s_channels[ src->channels[ i ] ];
+            chan->freq = src->freq;
+            chan->env = src->env;
+            chan->pan = src->pan[i];
+            S_Chan_Update(chan);
+        }
 
-        S_Chan_Update(chan);
+        return 1;
     }
+
+    return 0;
 }
 
 void S_Src_Play(sfx_source_t *src, sfx_buffer_t *buf, uint16_t freq, uint8_t pan, uint8_t vol, uint8_t autoloop)
@@ -204,6 +236,7 @@ void S_Src_Play(sfx_source_t *src, sfx_buffer_t *buf, uint16_t freq, uint8_t pan
     src->channels[ 1 ] = 0;
     src->freq = freq ? freq : buf->freq;
     src->paused = 0;
+    src->eof = 0;
 
     if (!buf || !buf->num_channels || !buf->data || !src->freq) {
         goto noplay;
