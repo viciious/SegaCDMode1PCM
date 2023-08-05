@@ -69,3 +69,23 @@ uint16_t scd_getpos_for_src(uint8_t src_id);
 
 // scd_clear_pcm stops playback on all channels
 void scd_clear_pcm(void);
+
+// returns playback status mask for all sources
+// if a source is active, it will have its bit set to 1 in the mask:
+// bit 0 for source id 1, bit 1 for source id 2, etc
+int scd_get_playback_status(void);
+
+// queues a scd_play_src call, always returns 0
+uint8_t scd_queue_play_src(uint8_t src_id, uint16_t buf_id, uint16_t freq, uint8_t pan, uint8_t vol, uint8_t autoloop);
+
+// queues a scd_update_src call
+void scd_queue_update_src(uint8_t src_id, uint16_t freq, uint8_t pan, uint8_t vol, uint8_t autoloop);
+
+// queues a scd_stop_src call
+void scd_queue_stop_src(uint8_t src_id);
+
+// queues a scd_clear_pcm call
+void scd_queue_clear_pcm(void);
+
+// flushes the command queue
+int scd_flush_cmd_queue(void);

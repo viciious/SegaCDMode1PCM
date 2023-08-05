@@ -55,8 +55,12 @@ SPMain:
 
 | wait for command in main comm port
 WaitCmd:
+        tst.b   updates_suspend
+        bne     WaitCmdPostUpdate
+
         jsr     S_Update
         
+WaitCmdPostUpdate:
         tst.b   0x800E.w
         beq.b   WaitCmd
         cmpi.b  #'D,0x800E.w
@@ -92,8 +96,8 @@ WaitCmd:
         beq     SfxStopSource
         cmpi.b  #'G,0x800E.w
         beq     SfxGetSourcePosition
-        cmpi.b  #'Y,0x800E.w
-        beq     SfxSourceIsPlaying
+        cmpi.b  #'E,0x800E.w
+        beq     SfxSuspendUpdates
 
         move.b  #'E,0x800F.w            /* sub comm port = ERROR */
 WaitAck:
@@ -315,7 +319,6 @@ SfxUpdateSource:
 SfxGetSourcePosition:
 | void S_GetSourcePosition(uint8_t src_id);
         moveq   #0,d0
-
         move.w  0x8010.w,d0
         move.l  d0,-(sp)                /* src_id */
 
@@ -327,17 +330,8 @@ SfxGetSourcePosition:
         move.b  #'D,0x800F.w            /* sub comm port = DONE */
         bra     WaitAck
 
-SfxSourceIsPlaying:
-| uint8_t S_SourceIsPlaying(uint8_t src_id);
-        moveq   #0,d0
-
-        move.w  0x8010.w,d0
-        move.l  d0,-(sp)                /* src_id */
-
-        jsr     S_SourceIsPlaying
-        lea     4(sp),sp                /* clear the stack */
-
-        move.b  d0,0x8020.w             /* state */
+SfxSuspendUpdates:
+        move.b  0x8010.w,updates_suspend
 
         move.b  #'D,0x800F.w            /* sub comm port = DONE */
         bra     WaitAck
@@ -378,6 +372,9 @@ drive_init_parms:
 
 track_number:
         .word   0
+
+updates_suspend:
+        .byte   0
 
         .global _start
 _start:

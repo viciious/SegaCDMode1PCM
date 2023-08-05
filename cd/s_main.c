@@ -30,12 +30,14 @@ void S_Clear(void)
 void S_Update(void)
 {
     static int s_upd = 0;
+    sfx_source_t *src;
+
     if (s_upd >= S_MAX_SOURCES) {
         s_upd = 0;
     }
-    if (S_Src_Paint(&s_sources[ s_upd ])) {
-        s_upd++;
-    }
+
+    src = &s_sources[ s_upd++ ];
+    S_Src_Paint(src);
 }
 
 void S_SetBufferData(uint16_t buf_id, uint8_t *data, uint32_t data_len)
@@ -74,9 +76,9 @@ uint8_t S_PlaySource(uint8_t src_id, uint16_t buf_id, uint16_t freq, uint8_t pan
     src = &s_sources[ src_id - 1 ];
     buf = &s_buffers[ buf_id - 1 ];
 
-    S_Src_Stop( src );
+    S_Src_Stop(src);
 
-    S_Src_Play( src, buf, freq, pan, vol, autoloop );
+    S_Src_Play(src, buf, freq, pan, vol, autoloop);
 
     if (!src->buf) {
         // refused to start
@@ -92,7 +94,6 @@ void S_UpdateSource(uint8_t src_id, uint16_t freq, uint8_t pan, uint8_t vol, uin
     if (src_id == 0 || src_id > S_MAX_SOURCES) {
         return;
     }
-
     S_Src_Update(src, freq, pan, vol, autoloop);
 }
 
@@ -103,7 +104,6 @@ void S_RewindSource(uint8_t src_id)
     if (src_id == 0 || src_id > S_MAX_SOURCES) {
         return;
     }
-
     S_Src_Rewind(src);
 }
 
@@ -124,7 +124,6 @@ void S_StopSource(uint8_t src_id)
     if (src_id == 0 || src_id > S_MAX_SOURCES) {
         return;
     }
-
     S_Src_Stop( src );
 }
 
@@ -135,17 +134,5 @@ uint16_t S_GetSourcePosition(uint8_t src_id)
     if (src_id == 0 || src_id > S_MAX_SOURCES) {
         return 0xffff;
     }
-
     return S_Src_GetPosition(src);
-}
-
-uint8_t S_SourceIsPlaying(uint8_t src_id)
-{
-    sfx_source_t *src = &s_sources[ src_id - 1 ];
-
-    if (src_id == 0 || src_id > S_MAX_SOURCES) {
-        return 0;
-    }
-
-    return src->buf != 0/* && src->painted > 0*/;
 }

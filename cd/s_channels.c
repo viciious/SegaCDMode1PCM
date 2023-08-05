@@ -20,8 +20,11 @@ int8_t S_Chan_FrontBuffer(sfx_channel_t *chan) {
         return 1;
     }
     volatile uint8_t *ptr = S_Chan_RAMPtr(chan);
+    uint16_t lo = *(ptr + 0); // LSB of PCM RAM location
     uint16_t hi = *(ptr + 2); // MSB of PCM RAM location
-    return (hi & 0x8) != 0;
+    if (CHBUF_SHIFT <= 8)
+        return (lo & (1<<(CHBUF_SHIFT-1))) != 0;
+    return (hi & (1<<(CHBUF_SHIFT-8))) != 0;
 }
 
 // buffer we can paint to

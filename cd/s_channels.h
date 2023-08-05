@@ -6,7 +6,7 @@
 
 #define S_MAX_CHANNELS 8
 
-#define CHBUF_SHIFT 11
+#define CHBUF_SHIFT 9
 #define CHBUF_SIZE (1<<CHBUF_SHIFT)
 #define CHBUF_POS(b) ((b)<<CHBUF_SHIFT)
 
