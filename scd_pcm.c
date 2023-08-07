@@ -20,21 +20,29 @@ extern unsigned short read_word(unsigned int src);
 extern unsigned int read_long(unsigned int src);
 
 static scd_cmd_t scd_cmds[MAX_SCD_CMDS];
-extern int16_t num_scd_cmds;
+static int16_t num_scd_cmds;
+
+static void scd_delay(void) SCD_CODE_ATTR;
+static char wait_cmd_ack(void) SCD_CODE_ATTR;
+static void wait_do_cmd(char cmd) SCD_CODE_ATTR;
 
 static char wait_cmd_ack(void)
 {
     char ack = 0;
 
-    while (!ack)
+    do {
+        scd_delay();
         ack = read_byte(0xA1200F); // wait for acknowledge byte in sub comm port
+    } while (!ack);
 
     return ack;
 }
 
 static void wait_do_cmd(char cmd)
 {
-    while (read_byte(0xA1200F)) ; // wait until Sub-CPU is ready to receive command
+    while (read_byte(0xA1200F)) {
+        scd_delay(); // wait until Sub-CPU is ready to receive command
+    }
     write_byte(0xA1200E, cmd); // set main comm port to command
 }
 
@@ -221,4 +229,12 @@ int scd_flush_cmd_queue(void)
 
     num_scd_cmds = 0;
     return i;
+}
+
+static void scd_delay(void)
+{
+    int cnt = 5;
+    do {
+        asm __volatile("nop");
+    } while (--cnt);
 }
